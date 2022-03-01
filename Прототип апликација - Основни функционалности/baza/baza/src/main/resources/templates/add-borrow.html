@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a new borrowed book</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<header xmlns:th="http://www.thymeleaf.org">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">TheBookSpot</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                    aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarsExampleDefault">
+                <ul class="navbar-nav m-auto">
+                    <li class="nav-item m-auto">
+                        <a class="nav-link active" href="/home">Home</a>
+                    </li>
+                    <li class="nav-item m-auto" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="nav-link active" href="/books">Books</a>
+                    </li>
+                    <li class="nav-item m-auto" >
+                        <a class="nav-link active" href="/members">View Memebers</a>
+                    </li>
+                    <li class="nav-item m-auto" >
+                    <li class="nav-item m-auto" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="nav-link active" href="/borrow">Borrowed books</a>
+                    </li>
+
+                </ul>
+
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li style="color: white; padding-left: 5px;" class="nav-item" th:if="${session.user != null}"
+                        th:text="${'Welcome, ' + session.user.getIme() + ' ' + ' ' +  session.user.getPrezime()}">
+                        <a class="nav-link" href="#">
+
+                        </a>
+                    </li>
+
+                    <li class="nav-item" th:if="${session.user == null}">
+                        <a class="btn btn-light btn-sm ml-3" href="/login">
+                            <i class="fa fa-shopping-cart"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-light btn-sm ml-3" href="/logout">
+                            <i class="fa fa-shopping-cart"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Register a new borrowed book</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                <form th:action="${'/borrow/add'}" th:method="POST">
+                    <input id="id" type="hidden" name="id" th:value="(${poz} != null ? ${poz.getId()} : '')">
+                    <div class="form-group">
+                        <label for="reciept">Date of reciept</label>
+                        <input type="date"
+                               class="form-control"
+                               id="reciept"
+                               name="reciept"
+                               th:value="(${poz} != null ? ${poz.getDatumNaVrakjanje()} : '')"
+                               required
+                               placeholder="Enter date of reciept">
+                    </div>
+                    <div class="form-group">
+                        <label for="return">Return date</label>
+                        <input type="date"
+                               class="form-control"
+                               id="return"
+                               name="return"
+                               th:value="(${poz} != null ? ${poz.getDatumNaVrakjanje()} : '')"
+                               required
+                               placeholder="Enter return date">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select nameQ="status">
+                            <!--                            <option th:each="poz: ${pozajmici}"-->
+                            <!--                            th:text="${poz.getStatus()}"-->
+                            <!--                                    th:value="${poz}"-->
+                            <!--                                    th:selected="${poz.getStatus()}">-->
+
+                            <!--                            </option>-->
+                            <option th:value="true">true</option>
+                            <option th:value="false">false</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Member</label>
+                        <select name="member" class="form-control">
+                            <option th:if="${poz} != null"
+                                    th:each="mem : ${chlen}"
+                                    th:value="${mem.getId()}"
+                                    th:text="${mem.getBroj()}">
+                            </option>
+                            <option th:if="${poz} == null"
+                                    th:each="mem : ${chlen}"
+                                    th:value="${mem.getId()}"
+                                    th:text="${mem.getBroj()}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Librarian</label>
+                        <select name="librarian" class="form-control">
+                            <option th:if="${poz} != null"
+                                    th:each="lib : ${bibliotekar}"
+                                    th:value="${lib.id}"
+                                    th:text="${lib.getChovek().getIme()}">
+                            </option>
+                            <option th:if="${poz} == null"
+                                    th:each="lib : ${bibliotekar}"
+                                    th:value="${lib.getId()}"
+                                    th:text="${lib.getChovek().getIme()}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Book name</label>
+                        <select name="bname" class="form-control">
+                            <!--                            <option th:if="${poz} != null"-->
+                            <!--                                    th:selected="${poz.getInstancaOdKniga().getIdNaKniga() != null && poz.getInstancaOdKniga().getIdNaKniga().getNaslov() == isbn.getId()}"-->
+                            <!--                                    th:each="is : ${isbn}"-->
+                            <!--                                    th:value="${is.getId()}"-->
+                            <!--                                    th:text="${is.getIdNaKniga().getNaslov()}">-->
+                            <!--                            </option>-->
+                            <!--                            <option th:if="${poz} == null"-->
+                            <!--                                    th:each="is : ${isbn}"-->
+                            <!--                                    th:value="${is.getId()}"-->
+                            <!--                                    th:text="${is.getIdNaKniga().getNaslov()}">-->
+                            <!--                            </option>-->
+                            <option th:if="${kniga} != null"
+                                    th:each="kniga : ${knigi}"
+                                    th:value="${kniga.getId()}"
+                                    th:text="${kniga.getNaslov()}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Book ISBN</label>
+                        <select name="uniqueid" class="form-control">
+                            <option th:if="${poz} != null"
+
+                                    th:each="is : ${isbn}"
+                                    th:value="${is.getId()}"
+                                    th:text="${is.getId().getUniqueId()}">
+                            </option>
+                            <option th:if="${poz} == null"
+                                    th:each="is : ${isbn}"
+                                    th:value="${is.getId()}"
+                                    th:text="${is.getId().getUniqueId()}">
+                            </option>
+                        </select>
+                    </div>
+                    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                    <a type="button" class="btn btn-primary" href="/borrow">Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+<footer class="text-black-50 mt-xl-5" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-lg-4 col-xl-3">
+                <h5>About</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+                <p class="mb-0">
+                    Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant
+                    impression.
+                </p>
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto">
+                <h5>Informations</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+                <ul class="list-unstyled">
+                    <li><a href="">Link 1</a></li>
+                    <li><a href="">Link 2</a></li>
+                    <li><a href="">Link 3</a></li>
+                    <li><a href="">Link 4</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto">
+                <h5>Others links</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+                <ul class="list-unstyled">
+                    <li><a href="">Link 1</a></li>
+                    <li><a href="">Link 2</a></li>
+                    <li><a href="">Link 3</a></li>
+                    <li><a href="">Link 4</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 col-lg-3 col-xl-3">
+                <h5>Contact</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-home mr-2"></i> My company</li>
+                    <li><i class="fa fa-envelope mr-2"></i> email@example.com</li>
+                    <li><i class="fa fa-phone mr-2"></i> + 33 12 14 15 16</li>
+                    <li><i class="fa fa-print mr-2"></i> + 33 12 14 15 16</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
+
