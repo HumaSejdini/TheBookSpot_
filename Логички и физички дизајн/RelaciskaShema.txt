@@ -1,0 +1,29 @@
+Chovek(id_chovek,ime,prezime,email,tel_broj,adresa,EMBG,username,password)
+
+Authentication(log_id,timestamp,id_chovek* (Chovek))
+
+Chlen(id_chovek*(Chovek), broj,datum_na_zachlenuvanje)
+
+Bibliotekar(id_chovek*(Chovek), id_na_bibliotekar)
+
+Avtor(id_na_avtor,ime)
+
+Kategorija(id_na_kategorija,ime_kategorija)
+
+Izdavac(id_na_izdavac,email,lokacija,ime_na_izdavac)
+
+Dobavuvac(id_na_dobavuvac,ime_na_dobavuvac)
+
+Knigi(id_na_kniga,opis,naslov,id_izdavac*(Izdavac))
+
+Izdava(id_avtor*(Avtor),id_knigi*(Knigi))
+
+E_od(id_na_kategorija*(Kategorija),id_knigi*(Knigi))
+
+Ocena(id_na_ocena,ocena,komentar,id_chovek_dava*(Chlen),ocena_id_kniga*(Knigi),ocena_id_avtor*(Avtor))
+
+Instanca_od_kniga(id_na_kniga*(Knigi),unique_id,dali_e_ostetena,status,id_na_dobavuvac*(Dobavuvac))
+
+Pozajmica(id_na_pozajmica,datum_na_zemanje,datum_na_vrakanje,status,id_chovek_odobruva*(Bibliotekar),id_chovek_prave*(Chlen),(unique_id,id_na_knigi)*(Instanca od kniga))
+
+Kazna(id_kazna,datum,cena_denari,id_pozajmica_proverka*(Pozajmica),id_chovek_imakazna*(Chlen))
